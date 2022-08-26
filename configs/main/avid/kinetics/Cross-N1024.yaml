@@ -1,0 +1,69 @@
+resume: false
+test_only: false
+num_workers: 6
+
+required_devices: 8
+no_test: false
+debug: false
+log2tb: true
+allow_double_bs: false
+seed: 0
+distributed: false
+test_freq: 1
+print_freq: 100
+
+dataset:
+  name: "kinetics"
+  full_res: true
+  batch_size: 128
+  video_clip_duration: 0.5
+  video_fps: 16.
+  crop_size: 224
+  audio_clip_duration: 2.
+  audio_fps: 24000.
+  spectrogram_fps: 100.
+  n_fft: 512
+  transforms: "msc+color"
+  train:
+    split: "train"
+    use_augmentation: true
+    drop_last: true
+    clips_per_video: 10
+  test:
+    split: "val"
+    use_augmentation: false
+    drop_last: true
+
+optimizer:
+  name: "adam"
+  weight_decay: 0.00001
+  momentum: 0.9
+  num_epochs: 30
+  lr:
+    name: "multistep"
+    base_lr: 0.002
+    gamma: 0.5
+    milestones: [10, 20, 30]
+
+model:
+  name: "Cross-N1024"
+  model_dir: "checkpoints/AVID/Kinetics"
+  arch: "av_wrapper"
+  args:
+    proj_dim: [64, 64, 32]
+    video_backbone: "R2Plus1D"
+    video_backbone_args:
+      depth: 6
+    audio_backbone: "Conv2D"
+    audio_backbone_args:
+      depth: 3
+    use_shuffle: False
+
+loss:
+  name: "AVID"
+  args:
+    num_data: 99823
+    num_negatives: 1024
+    momentum: 0.5
+    xModal_coeff: 1.
+    wModal_coeff: 0.

@@ -1,0 +1,72 @@
+required_devices: 8
+resume: false
+
+no_test: false
+test_only: false
+debug: false
+seed: 0
+distributed: false
+test_freq: 5
+num_workers: 6
+print_freq: 100
+
+benchmark:
+  name: "hmdb51-wucls-8at16"
+
+dataset:
+  name: "hmdb51"
+  fold: 1
+  batch_size: 64
+  clip_duration: 0.5
+  video_fps: 16.
+  crop_size: 224
+  transform: "msc+color"
+  min_area: 0.08
+  color: [1., 1., 1., 0.2]
+  sample_grad_cam: false
+  train:
+    split: "train-split{fold}"
+    mode: "clip"
+    clips_per_video: 25
+    use_augmentation: true
+    use_shuffle: true
+    drop_last: true
+    return_index: true
+  test:
+    split: "test-split{fold}"
+    mode: "clip"
+    clips_per_video: 1
+    use_augmentation: false
+    use_shuffle: false
+    drop_last: false
+    return_index: true
+  test_dense:
+    split: "test-split{fold}"
+    mode: "video"
+    clips_per_video: 10
+    use_augmentation: false
+    use_shuffle: false
+    drop_last: false
+    return_index: false
+
+optimizer:
+  name: "adam"
+  num_epochs: 10
+  weight_decay: 0.0
+  warmup_classifier: true
+  lr:
+    name: "multistep"
+    base_lr: 0.0001
+    gamma: 0.3
+    milestones: [19, 32, 44]
+    save_freq: 1
+
+model:
+  name: "ClassificationWrapper"
+  args:
+    n_classes: 20
+    feat_name: "conv1"
+    pooling_op: "AdaptiveMaxPool3d((1, 28, 28))"
+    feat_dim: 50176
+    use_dropout: true
+    dropout: 0.5

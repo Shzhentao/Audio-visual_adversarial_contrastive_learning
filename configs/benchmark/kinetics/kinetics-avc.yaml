@@ -1,0 +1,77 @@
+required_devices: 8
+resume: false
+
+no_test: false
+test_only: false
+debug: false
+seed: 0
+distributed: false
+test_freq: 1
+num_workers: 9
+print_freq: 100
+
+benchmark:
+  name: "kinetics-avc"
+
+dataset:
+  name: "kineticsdown"
+  fold: 1
+  batch_size: 64
+  video_clip_duration: 0.5
+  video_fps: 16.
+  crop_size: 224
+  transform: 'msc+color'
+  color: [0.4, 0.4, 0.4, 0.2]
+  audio_clip_duration: 2.
+  audio_fps: 24000.
+  spectrogram_fps: 100.
+  n_fft: 512
+  sample_grad_cam: false
+  sample_grad_cam_audio: False
+  train:
+    split: "train"
+    mode: "clip"
+    clips_per_video: 1
+    time_scale_max_ratio: 1
+    use_augmentation: true
+    use_shuffle: true
+    drop_last: true
+    return_index: true
+  test:
+    split: "val"
+    mode: "clip"
+    clips_per_video: 1
+    time_scale_max_ratio: 1
+    use_augmentation: false
+    use_shuffle: false
+    drop_last: false
+    return_index: true
+  test_dense:
+    split: "val"
+    mode: "video"
+    clips_per_video: 10
+    time_scale_max_ratio: 1
+    use_augmentation: false
+    use_shuffle: false
+    drop_last: false
+    return_index: false
+
+optimizer:
+  name: "adam"
+  num_epochs: 50
+  weight_decay: 0.0
+  warmup_classifier: true
+  lr:
+    name: "multistep"
+    base_lr: 0.0001
+    gamma: 0.3
+    milestones: [19, 32, 44]
+    save_freq: 5
+
+model:
+  name: "avc_wrapper"
+  args:
+    feat_name_video: "pool"
+    feat_name_audio: "pool"
+    use_dropout: true
+    dropout: 0.5
